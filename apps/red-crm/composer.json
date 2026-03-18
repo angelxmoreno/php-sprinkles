@@ -1,0 +1,44 @@
+{
+    "name": "phpsprinkles/red-crm",
+    "description": "Red CRM API server built on the PHPSprinkles framework",
+    "license": "proprietary",
+    "type": "project",
+    "require": {
+        "php": ">=8.2",
+        "phpsprinkles/framework": "@dev"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.5.3 || ^12.1.3"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../framework/PHPSprinkles",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Test\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "cakephp/plugin-installer": true
+        },
+        "platform-check": true,
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "scripts": {
+        "test": "phpunit --colors=always"
+    }
+}

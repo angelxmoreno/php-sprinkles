@@ -25,6 +25,7 @@ use Cake\Routing\RouteBuilder;
 use Cake\Routing\Middleware\RoutingMiddleware;
 use Cake\TestSuite\TestCase;
 use PHPSprinkles\BaseApplication;
+use PHPSprinkles\Middleware\HealthcheckMiddleware;
 
 /**
  * ApplicationTest class
@@ -47,8 +48,10 @@ class ApplicationTest extends TestCase
 
         $this->assertInstanceOf(ErrorHandlerMiddleware::class, $middleware->current());
         $middleware->seek(1);
-        $this->assertInstanceOf(RoutingMiddleware::class, $middleware->current());
+        $this->assertInstanceOf(HealthcheckMiddleware::class, $middleware->current());
         $middleware->seek(2);
+        $this->assertInstanceOf(RoutingMiddleware::class, $middleware->current());
+        $middleware->seek(3);
         $this->assertInstanceOf(BodyParserMiddleware::class, $middleware->current());
     }
 

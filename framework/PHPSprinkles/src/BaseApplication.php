@@ -14,6 +14,7 @@ use Cake\Http\MiddlewareQueue;
 use Cake\ORM\Locator\TableLocator;
 use Cake\Routing\Middleware\RoutingMiddleware;
 use Cake\Routing\RouteBuilder;
+use PHPSprinkles\Middleware\HealthcheckMiddleware;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 
 /**
@@ -37,6 +38,7 @@ class BaseApplication extends CakeBaseApplication
     {
         $middlewareQueue
             ->add(new ErrorHandlerMiddleware(Configure::read('Error'), $this))
+            ->add(new HealthcheckMiddleware())
             ->add(new RoutingMiddleware($this))
             ->add(new BodyParserMiddleware());
 
