@@ -6,13 +6,13 @@ namespace PHPSprinklesRequestId\Test\TestCase;
 use Cake\Http\MiddlewareQueue;
 use PHPUnit\Framework\TestCase;
 use PHPSprinklesRequestId\Middleware\RequestIdMiddleware;
-use PHPSprinklesRequestId\Plugin;
+use PHPSprinklesRequestId\PHPSprinklesRequestIdPlugin;
 
 class PluginTest extends TestCase
 {
     public function testPluginAddsRequestIdMiddlewareToQueue(): void
     {
-        $plugin = new Plugin();
+        $plugin = new PHPSprinklesRequestIdPlugin();
         $queue = $plugin->middleware(new MiddlewareQueue());
 
         $this->assertCount(1, $queue);

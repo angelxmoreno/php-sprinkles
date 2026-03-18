@@ -26,9 +26,22 @@ use Psr\Container\ContainerInterface as PsrContainerInterface;
  */
 class BaseApplication extends CakeBaseApplication
 {
+    protected bool $pluginMiddlewareApplied = false;
+
     public function bootstrap(): void
     {
         parent::bootstrap();
+
+        foreach ($this->pluginList() as $plugin => $config) {
+            if (is_int($plugin)) {
+                $plugin = $config;
+                $config = [];
+            }
+
+            if (!$this->getPlugins()->has((string)$plugin)) {
+                $this->addPlugin((string)$plugin, (array)$config);
+            }
+        }
 
         FactoryLocator::add('Table', (new TableLocator())->allowFallbackClass(false));
         $this->bootstrapConfig();
@@ -37,7 +50,11 @@ class BaseApplication extends CakeBaseApplication
     public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue
     {
         $middlewareQueue
-            ->add(new ErrorHandlerMiddleware(Configure::read('Error'), $this))
+            ->add(new ErrorHandlerMiddleware(Configure::read('Error'), $this));
+
+        $middlewareQueue = $this->pluginMiddleware($middlewareQueue);
+
+        $middlewareQueue
             ->add(new HealthcheckMiddleware())
             ->add(new RoutingMiddleware($this))
             ->add(new BodyParserMiddleware());
@@ -68,6 +85,17 @@ class BaseApplication extends CakeBaseApplication
         $this->routesConfig($routes);
     }
 
+    public function pluginMiddleware(MiddlewareQueue $middleware): MiddlewareQueue
+    {
+        if ($this->pluginMiddlewareApplied) {
+            return $middleware;
+        }
+
+        $this->pluginMiddlewareApplied = true;
+
+        return parent::pluginMiddleware($middleware);
+    }
+
     /**
      * Hook for shared framework bootstrap configuration.
      */
@@ -95,5 +123,17 @@ class BaseApplication extends CakeBaseApplication
      */
     protected function routesConfig(RouteBuilder $routes): void
     {
+    }
+
+    /**
+     * Hook for framework-managed shared plugins.
+     *
+     * @return array<int|string, array<string, mixed>|string>
+     */
+    protected function pluginList(): array
+    {
+        return [
+            'PHPSprinklesRequestId',
+        ];
     }
 }

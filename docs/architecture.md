@@ -34,13 +34,17 @@ The main variation between apps is domain logic.
 
 ### 4. Shared capabilities live in plugins
 
-Reusable cross-cutting capabilities should live in PHPSprinkles plugins and be loaded by the shared `BaseApplication`.
+Reusable cross-cutting capabilities should live in plugins and be loaded by the shared `BaseApplication`.
 
 Examples:
 - authentication support
 - JWT support
 - future integrations such as Convex
 - other reusable infrastructure concerns
+
+There are two plugin classes:
+- framework-owned plugins under `framework/PHPSprinkles/plugins`
+- selective or standalone plugins under top-level `plugins/`
 
 ### 5. We are not using a copied base app as the runtime model
 
@@ -76,7 +80,7 @@ Domain controllers, models, routes, and service classes belong directly in the a
 
 ## Ownership Buckets
 
-### Bucket 1: PHPSprinkles
+### Bucket 1: Framework Core
 
 If it is true for every API, it belongs in PHPSprinkles.
 
@@ -94,6 +98,9 @@ This bucket should not contain:
 - client-specific routes
 - client-specific service classes
 
+Rule:
+- if removing it would break the framework itself, it belongs in `framework/PHPSprinkles/src`
+
 ### Bucket 2: App
 
 If it is domain-specific, it belongs in the app.
@@ -107,30 +114,51 @@ This bucket should contain:
 
 Apps should remain thin and should avoid re-implementing shared platform behavior.
 
-### Bucket 3: Plugin
+### Bucket 3: Framework Plugin
 
-If it is a reusable capability, it belongs in a plugin loaded by `BaseApplication`.
+If it is modular, reusable, and universal across all apps, it belongs in a framework plugin loaded by `BaseApplication`.
 
 This bucket should contain:
-- reusable auth-related capabilities
-- JWT support
-- third-party integrations that may be enabled platform-wide
-- reusable infrastructure or platform modules that are not domain-specific
+- reusable auth-related capabilities that every app gets
+- JWT support if it is standard across the platform
+- platform-wide infrastructure features such as request IDs
+- reusable modules that are cleaner as plugins than as framework core
 
-Plugins should not become a dumping ground for domain logic that belongs in one specific app.
+Framework plugins should live under:
 
-## Plugin Development Workflow
+```text
+framework/PHPSprinkles/plugins/<PluginName>
+```
 
-Reusable capabilities should be created directly under:
+They should:
+- be loaded by the framework, not individual apps
+- populate automatically to every app through the shared framework
+- remain internal to PHPSprinkles unless there is a reason to extract them later
+
+### Bucket 4: Top-Level Plugin
+
+If it is selective, app-specific, or a candidate for independent release later, it belongs in top-level `plugins/`.
+
+This bucket should contain:
+- capabilities used by only some apps
+- integrations not guaranteed to exist in every API
+- plugins with a plausible independent lifecycle
+
+Top-level plugins should live under:
 
 ```text
 plugins/<PluginName>
 ```
 
-They should not be incubated inside `framework/PHPSprinkles` and moved later.
+These are not assumed to be loaded by every app.
+
+## Plugin Development Workflow
+
+Plugin placement depends on ownership.
 
 Preferred development flow:
-- scaffold the plugin directly in `plugins/`
+- put universal platform plugins directly in `framework/PHPSprinkles/plugins/`
+- put optional or standalone plugins directly in top-level `plugins/`
 - give it its own Composer package metadata
 - develop and test it there
 - load it through `BaseApplication` once it is ready to be shared across apps
@@ -138,8 +166,17 @@ Preferred development flow:
 Reasoning:
 - correct ownership from the start
 - no later path or namespace migration
-- clearer Composer boundaries
-- better long-term monorepo hygiene
+- no app-level wiring for framework-owned plugin behavior
+- better long-term extraction boundaries
+
+## Runtime vs Dependency Resolution
+
+CakePHP plugin discovery and Composer package resolution are separate concerns.
+
+- CakePHP runtime plugin loading can be controlled through plugin paths and framework bootstrapping.
+- Composer dependency resolution decides how code gets installed in the first place.
+
+The new boundary exists because framework-owned plugins should behave as part of the framework at runtime and should not require per-app integration work.
 
 ## Layering Model
 
@@ -147,7 +184,8 @@ The chosen layering model is:
 
 1. Domain app
 2. PHPSprinkles framework
-3. PHPSprinkles plugins
+3. PHPSprinkles framework plugins
+4. Optional standalone plugins
 
 In practice, the app is the runnable entrypoint, but its runtime behavior should be heavily standardized by the PHPSprinkles framework and the plugins loaded through the shared `BaseApplication`.
 
@@ -160,14 +198,10 @@ php-sprinkles-mono/
       composer.json
       src/
       config/
+      plugins/
       tests/
   plugins/
-    PHPSprinklesAuth/
-      composer.json
-      src/
-      config/
-      tests/
-    PHPSprinklesJWT/
+    OptionalStandalonePlugin/
       composer.json
       src/
       config/
@@ -190,8 +224,8 @@ php-sprinkles-mono/
 ## Namespace Map
 
 - `framework/PHPSprinkles/src` -> `PHPSprinkles\\`
-- `plugins/PHPSprinklesAuth/src` -> `PHPSprinklesAuth\\`
-- `plugins/PHPSprinklesJWT/src` -> `PHPSprinklesJWT\\`
+- `framework/PHPSprinkles/plugins/<PluginName>/src` -> `<PluginName>\\`
+- `plugins/<PluginName>/src` -> `<PluginName>\\`
 - `apps/<app>/src` -> `App\\`
 
 ## Composer Package Names
@@ -202,7 +236,7 @@ Recommended package names:
 - `phpsprinkles/auth`
 - `phpsprinkles/jwt`
 
-Apps should depend on the framework and the shared plugins they use via Composer path repositories during monorepo development.
+Apps should depend on the framework. Framework-owned plugins should be brought in through the framework, while top-level plugins remain explicit dependencies only when they are actually selective or standalone.
 
 ## BaseApplication Contract
 
@@ -222,6 +256,8 @@ Each app's local `App\Application` should:
 - add only app-specific routes, services, or config
 - avoid re-implementing shared middleware, bootstrap, or plugin wiring
 
+Framework-owned plugins should be loaded here so every app inherits them automatically.
+
 Recommended extension hooks in `BaseApplication`:
 - `pluginList(): array`
 - `middlewareConfig(MiddlewareQueue $middlewareQueue): MiddlewareQueue`
@@ -233,10 +269,17 @@ Recommended extension hooks in `BaseApplication`:
 
 - If it is true for every API, it belongs in `PHPSprinkles`.
 - If it is domain-specific, it belongs in the app.
-- If it is a reusable capability, it belongs in a plugin loaded by `BaseApplication`.
+- If it is a reusable capability for every app, it belongs in a framework plugin loaded by `BaseApplication`.
+- If it is selective or intended for standalone release later, it belongs in top-level `plugins/`.
 
 This rule should be used whenever there is uncertainty about where new code belongs.
 
+## Promotion / Extraction Rule
+
+Framework plugins can later be promoted to top-level `plugins/` if they stop being universal, need an independent lifecycle, or become realistic standalone packages.
+
+That move should be treated as an extraction step, not the default starting point.
+
 ## Open Follow-Up
 
-The next implementation task is to restructure the current monorepo to match this architecture and prove it with the first runnable app.
+The next implementation task is to align the current plugin layout with this architecture, especially where universal framework behavior is still living at the monorepo top level.

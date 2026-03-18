@@ -7,7 +7,7 @@ use Cake\Core\BasePlugin;
 use Cake\Http\MiddlewareQueue;
 use PHPSprinklesRequestId\Middleware\RequestIdMiddleware;
 
-class Plugin extends BasePlugin
+class PHPSprinklesRequestIdPlugin extends BasePlugin
 {
     public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue
     {

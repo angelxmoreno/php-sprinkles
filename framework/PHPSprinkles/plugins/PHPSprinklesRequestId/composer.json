@@ -1,6 +1,6 @@
 {
     "name": "phpsprinkles/request-id",
-    "description": "Shared request ID plugin for PHPSprinkles APIs",
+    "description": "Framework-owned request ID plugin for PHPSprinkles APIs",
     "license": "proprietary",
     "type": "cakephp-plugin",
     "require": {

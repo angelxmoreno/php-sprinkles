@@ -6,9 +6,9 @@ This is the concrete sequence for moving the monorepo from the current CakePHP s
 
 - Phase 1: complete
 - Phase 2: complete
-- Phase 3: active once the first real shared plugin exists
+- Phase 3: complete
 - Phase 4: complete
-- Phase 5: pending after the first app exists
+- Phase 5: complete for the framework and first app
 
 ## Phase 1: Restructure the Monorepo
 
@@ -36,31 +36,40 @@ Status: complete
 
 ## Phase 3: Normalize Shared Plugins
 
-1. Rename placeholder plugin directories to the chosen convention:
-   - `plugins/PHPSprinklesAuth`
-   - `plugins/PHPSprinklesJWT`
-2. Give each plugin its own `composer.json`, `src/`, `config/`, and `tests/`.
-3. Wire shared plugin loading through `PHPSprinkles\BaseApplication`.
+The plugin model has changed.
 
-Status: ready
+Universal framework capabilities should no longer default to top-level `plugins/`.
 
-Reason:
-- this phase starts when a real shared plugin exists
-- the first concrete candidate is `PHPSprinklesRequestId`
+New direction:
+- framework-owned plugins belong in `framework/PHPSprinkles/plugins`
+- top-level `plugins/` is reserved for selective or future standalone plugins
+- framework-owned plugins should be loaded by `PHPSprinkles\BaseApplication`
+- apps should inherit those plugins automatically
+
+The first concrete example of this model is `PHPSprinklesRequestId`, which now lives inside the framework as a framework-owned plugin.
+
+Status: complete
 
 Plugin development rule:
-- create plugins directly in `plugins/`
-- do not bake them inside `framework/PHPSprinkles` and move them later
+- create framework-owned plugins directly in `framework/PHPSprinkles/plugins/`
+- create selective or standalone plugins directly in top-level `plugins/`
 
 Future tooling note:
-- add a scaffolding command for plugins
+- add scaffolding commands for both plugin classes
 - intended shape:
 
 ```bash
-sprinkles build:plugin PHPSprinklesRequestId
+sprinkles build:framework-plugin PHPSprinklesRequestId
+sprinkles build:plugin SomeStandalonePlugin
 ```
 
-- this command is not part of the current implementation
+- these commands are not part of the current implementation
+
+Verified outcome:
+- `PHPSprinklesRequestId` now lives under `framework/PHPSprinkles/plugins/PHPSprinklesRequestId`
+- the framework owns the plugin namespace and loading
+- `red-crm` no longer points at a top-level `plugins/PHPSprinklesRequestId` path
+- the top-level `plugins/` directory is reserved for selective or standalone work
 
 ## Phase 4: Create the First Thin App
 
@@ -104,6 +113,9 @@ Verified outcome:
 3. Verify shared framework changes flow into the app through inheritance instead of copied files.
 4. Verify shared plugin loading works through the base application.
 
+Note:
+- framework-owned plugin verification is now proven with `PHPSprinklesRequestId`
+
 ## Success Criteria
 
 The implementation is correct when:
@@ -111,4 +123,5 @@ The implementation is correct when:
 - at least one app extends `PHPSprinkles\BaseApplication`
 - apps keep the standard `App\\` namespace
 - domain code lives in app `src/`
-- shared capabilities are loadable from `plugins/`
+- framework-owned capabilities are loadable from `framework/PHPSprinkles/plugins/`
+- top-level `plugins/` is used only for selective or standalone plugin work

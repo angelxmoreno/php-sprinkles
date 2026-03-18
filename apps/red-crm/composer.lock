@@ -677,7 +677,7 @@
             "dist": {
                 "type": "path",
                 "url": "../../framework/PHPSprinkles",
-                "reference": "aecc5fe90872592cf372ee8fd972b0ae47851201"
+                "reference": "7e9565e126d83d045dacad24f6c0268a9870e023"
             },
             "require": {
                 "cakephp/cakephp": "^5.3.0",
@@ -702,7 +702,8 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "PHPSprinkles\\": "src/"
+                    "PHPSprinkles\\": "src/",
+                    "PHPSprinklesRequestId\\": "plugins/PHPSprinklesRequestId/src/"
                 }
             },
             "autoload-dev": {

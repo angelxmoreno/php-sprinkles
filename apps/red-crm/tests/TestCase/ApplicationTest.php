@@ -14,6 +14,7 @@ use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 use PHPSprinkles\BaseApplication;
 use PHPSprinkles\Middleware\HealthcheckMiddleware;
+use PHPSprinklesRequestId\Middleware\RequestIdMiddleware;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -31,14 +32,17 @@ class ApplicationTest extends TestCase
     public function testApplicationUsesFrameworkMiddlewareStack(): void
     {
         $app = new Application(dirname(__DIR__, 2) . '/config');
+        $app->bootstrap();
         $middleware = $app->middleware(new MiddlewareQueue());
 
         $this->assertInstanceOf(ErrorHandlerMiddleware::class, $middleware->current());
         $middleware->seek(1);
-        $this->assertInstanceOf(HealthcheckMiddleware::class, $middleware->current());
+        $this->assertInstanceOf(RequestIdMiddleware::class, $middleware->current());
         $middleware->seek(2);
-        $this->assertInstanceOf(RoutingMiddleware::class, $middleware->current());
+        $this->assertInstanceOf(HealthcheckMiddleware::class, $middleware->current());
         $middleware->seek(3);
+        $this->assertInstanceOf(RoutingMiddleware::class, $middleware->current());
+        $middleware->seek(4);
         $this->assertInstanceOf(BodyParserMiddleware::class, $middleware->current());
     }
 
@@ -49,5 +53,8 @@ class ApplicationTest extends TestCase
         $this->assertResponseOk();
         $this->assertContentType('application/json');
         $this->assertResponseContains('"status":"ok"');
+        $requestId = $this->_response->getHeaderLine('X-Request-Id');
+        $this->assertNotSame('', $requestId);
+        $this->assertHeader('X-Request-Id', $requestId);
     }
 }
