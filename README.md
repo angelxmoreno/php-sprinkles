@@ -54,6 +54,34 @@ Examples:
 - `PHPSprinklesJWT`
 - future cross-cutting integrations such as Convex
 
+## Plugin Development Workflow
+
+If something is a plugin, create it directly in `plugins/` from the beginning.
+
+Do not scaffold it inside `framework/PHPSprinkles` and move it later.
+
+Preferred workflow:
+
+1. Create `plugins/<PluginName>/`
+2. Give it its own `composer.json`, `src/`, `config/`, and `tests/`
+3. Build and test it there
+4. Wire it into the framework through Composer path repositories and `BaseApplication` only when it is ready to be shared
+
+Why:
+- it keeps ownership correct from day one
+- it avoids path and namespace churn later
+- it reinforces the rule that reusable capabilities belong in plugins, not in the framework
+
+Future tooling need:
+- add a scaffolding command for plugin creation
+- intended shape:
+
+```bash
+sprinkles build:plugin PHPSprinklesRequestId
+```
+
+- that command does not exist yet and should be added later
+
 ## Current Direction
 
 The chosen model is:

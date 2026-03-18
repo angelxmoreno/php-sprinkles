@@ -6,7 +6,7 @@ This is the concrete sequence for moving the monorepo from the current CakePHP s
 
 - Phase 1: complete
 - Phase 2: complete
-- Phase 3: deferred until real shared plugins exist
+- Phase 3: active once the first real shared plugin exists
 - Phase 4: complete
 - Phase 5: pending after the first app exists
 
@@ -42,11 +42,25 @@ Status: complete
 2. Give each plugin its own `composer.json`, `src/`, `config/`, and `tests/`.
 3. Wire shared plugin loading through `PHPSprinkles\BaseApplication`.
 
-Status: deferred
+Status: ready
 
 Reason:
-- there are no real shared plugins to normalize yet
-- plugin structure should be revisited once the first concrete shared capability exists
+- this phase starts when a real shared plugin exists
+- the first concrete candidate is `PHPSprinklesRequestId`
+
+Plugin development rule:
+- create plugins directly in `plugins/`
+- do not bake them inside `framework/PHPSprinkles` and move them later
+
+Future tooling note:
+- add a scaffolding command for plugins
+- intended shape:
+
+```bash
+sprinkles build:plugin PHPSprinklesRequestId
+```
+
+- this command is not part of the current implementation
 
 ## Phase 4: Create the First Thin App
 

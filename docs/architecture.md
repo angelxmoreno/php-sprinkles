@@ -119,6 +119,28 @@ This bucket should contain:
 
 Plugins should not become a dumping ground for domain logic that belongs in one specific app.
 
+## Plugin Development Workflow
+
+Reusable capabilities should be created directly under:
+
+```text
+plugins/<PluginName>
+```
+
+They should not be incubated inside `framework/PHPSprinkles` and moved later.
+
+Preferred development flow:
+- scaffold the plugin directly in `plugins/`
+- give it its own Composer package metadata
+- develop and test it there
+- load it through `BaseApplication` once it is ready to be shared across apps
+
+Reasoning:
+- correct ownership from the start
+- no later path or namespace migration
+- clearer Composer boundaries
+- better long-term monorepo hygiene
+
 ## Layering Model
 
 The chosen layering model is:
