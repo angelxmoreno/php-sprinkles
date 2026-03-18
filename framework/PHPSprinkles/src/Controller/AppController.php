@@ -14,7 +14,7 @@ declare(strict_types=1);
  * @since     0.2.9
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace App\Controller;
+namespace PHPSprinkles\Controller;
 
 use Cake\Controller\Controller;
 
@@ -28,25 +28,9 @@ use Cake\Controller\Controller;
  */
 class AppController extends Controller
 {
-    /**
-     * Initialization hook method.
-     *
-     * Use this method to add common initialization code like loading components.
-     *
-     * e.g. `$this->loadComponent('FormProtection');`
-     *
-     * @return void
-     */
     public function initialize(): void
     {
         parent::initialize();
-
-        $this->loadComponent('Flash');
-
-        /*
-         * Enable the following component for recommended CakePHP form protection settings.
-         * see https://book.cakephp.org/5/en/controllers/components/form-protection.html
-         */
-        //$this->loadComponent('FormProtection');
+        $this->viewBuilder()->disableAutoLayout();
     }
 }

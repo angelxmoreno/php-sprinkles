@@ -74,10 +74,6 @@ We are not creating an extra app-local domain plugin layer by default.
 
 Domain controllers, models, routes, and service classes belong directly in the app's own `src/` and app config.
 
-### 9. Shared Users MVC lives in PHPSprinkles
-
-Users is a platform-level concern for this system and should live in PHPSprinkles, not in a separate Users plugin.
-
 ## Ownership Buckets
 
 ### Bucket 1: PHPSprinkles
@@ -90,7 +86,6 @@ This bucket should contain:
 - shared bootstrap behavior
 - shared request/response conventions
 - shared error handling conventions
-- shared Users MVC that every app uses
 - shared base controllers and other app-wide framework abstractions
 
 This bucket should not contain:
@@ -197,7 +192,6 @@ Apps should depend on the framework and the shared plugins they use via Composer
 - JSON/API response conventions
 - shared exception and error handling conventions
 - shared bootstrap conventions
-- shared Users MVC availability
 - common service/container registration hooks
 
 Each app's local `App\Application` should:

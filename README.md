@@ -31,7 +31,6 @@ It owns:
 - the shared `BaseApplication`
 - common API bootstrap and middleware wiring
 - Authentication and Authorization defaults
-- shared Users functionality
 - shared API conventions and error/response behavior
 
 It is not a standalone business app, and it is not where domain-specific logic should live.
@@ -63,7 +62,6 @@ The chosen model is:
 - all apps extend the shared `BaseApplication`
 - apps keep the standard CakePHP `App\\` namespace
 - domain code lives directly in each app's `src/`
-- shared Users MVC lives in PHPSprinkles
 - no copied base-app template as the primary runtime mechanism
 
 ## Physical Layout
@@ -96,7 +94,6 @@ php-sprinkles-mono/
 - middleware defaults
 - Authentication and Authorization defaults
 - shared bootstrap and API wiring
-- shared Users MVC availability
 - common service/container hooks
 
 Each app's local `App\Application` stays thin and should only add domain-specific routes, services, or config.

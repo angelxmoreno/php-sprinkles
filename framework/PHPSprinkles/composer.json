@@ -1,9 +1,9 @@
 {
-    "name": "cakephp/app",
-    "description": "CakePHP skeleton app",
+    "name": "phpsprinkles/framework",
+    "description": "Shared PHPSprinkles API framework",
     "license": "MIT",
-    "type": "project",
-    "homepage": "https://cakephp.org",
+    "type": "library",
+    "homepage": "https://github.com/phpsprinkles/phpsprinkles",
     "require": {
         "php": ">=8.2",
         "cakephp/cakephp": "^5.3.0",
@@ -26,12 +26,12 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "src/"
+            "PHPSprinkles\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "App\\Test\\": "tests/",
+            "PHPSprinkles\\Test\\": "tests/",
             "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
         }
     },
@@ -44,8 +44,6 @@
         "sort-packages": true
     },
     "scripts": {
-        "post-install-cmd": "App\\Console\\Installer::postInstall",
-        "post-create-project-cmd": "App\\Console\\Installer::postInstall",
         "check": [
             "@test",
             "@cs-check"

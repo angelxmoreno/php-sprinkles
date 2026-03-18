@@ -14,72 +14,51 @@ declare(strict_types=1);
  * @since         3.3.0
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
-namespace App\Test\TestCase;
+namespace PHPSprinkles\Test\TestCase;
 
-use App\Application;
+use Cake\Http\Middleware\BodyParserMiddleware;
 use Cake\Core\Configure;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\MiddlewareQueue;
-use Cake\Routing\Middleware\AssetMiddleware;
+use Cake\Routing\RouteCollection;
+use Cake\Routing\RouteBuilder;
 use Cake\Routing\Middleware\RoutingMiddleware;
-use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
+use PHPSprinkles\BaseApplication;
 
 /**
  * ApplicationTest class
  */
 class ApplicationTest extends TestCase
 {
-    use IntegrationTestTrait;
-
-    /**
-     * Test bootstrap in production.
-     *
-     * @return void
-     */
-    public function testBootstrap()
+    public function testBootstrap(): void
     {
-        Configure::write('debug', false);
-        $app = new Application(dirname(__DIR__, 2) . '/config');
+        $app = new BaseApplication(dirname(__DIR__, 2) . '/config');
         $app->bootstrap();
-        $plugins = $app->getPlugins();
-
-        $this->assertTrue($plugins->has('Bake'), 'plugins has Bake?');
-        $this->assertFalse($plugins->has('DebugKit'), 'plugins has DebugKit?');
-        $this->assertTrue($plugins->has('Migrations'), 'plugins has Migrations?');
+        $this->assertTrue($app->getPlugins()->has('Migrations'));
     }
 
-    /**
-     * Test bootstrap add DebugKit plugin in debug mode.
-     *
-     * @return void
-     */
-    public function testBootstrapInDebug()
+    public function testMiddleware(): void
     {
-        Configure::write('debug', true);
-        $app = new Application(dirname(__DIR__, 2) . '/config');
-        $app->bootstrap();
-        $plugins = $app->getPlugins();
-
-        $this->assertTrue($plugins->has('DebugKit'), 'plugins has DebugKit?');
-    }
-
-    /**
-     * testMiddleware
-     *
-     * @return void
-     */
-    public function testMiddleware()
-    {
-        $app = new Application(dirname(__DIR__, 2) . '/config');
+        $app = new BaseApplication(dirname(__DIR__, 2) . '/config');
         $middleware = new MiddlewareQueue();
 
         $middleware = $app->middleware($middleware);
 
         $this->assertInstanceOf(ErrorHandlerMiddleware::class, $middleware->current());
         $middleware->seek(1);
-        $this->assertInstanceOf(AssetMiddleware::class, $middleware->current());
-        $middleware->seek(2);
         $this->assertInstanceOf(RoutingMiddleware::class, $middleware->current());
+        $middleware->seek(2);
+        $this->assertInstanceOf(BodyParserMiddleware::class, $middleware->current());
+    }
+
+    public function testRoutesHookIsCallable(): void
+    {
+        $app = new BaseApplication(dirname(__DIR__, 2) . '/config');
+        $builder = new RouteBuilder(new RouteCollection(), '/');
+
+        $app->routes($builder);
+
+        $this->assertInstanceOf(RouteBuilder::class, $builder);
     }
 }

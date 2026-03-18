@@ -21,7 +21,6 @@ This is the concrete sequence for moving the monorepo from the current CakePHP s
    - shared middleware setup
    - shared bootstrap wiring
    - shared API conventions
-   - shared Users MVC
 
 ## Phase 3: Normalize Shared Plugins
 
@@ -53,5 +52,4 @@ The implementation is correct when:
 - at least one app extends `PHPSprinkles\BaseApplication`
 - apps keep the standard `App\\` namespace
 - domain code lives in app `src/`
-- shared Users MVC lives in PHPSprinkles
 - shared capabilities are loadable from `plugins/`
