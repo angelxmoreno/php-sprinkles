@@ -85,6 +85,23 @@ return [
     ],
 
     /*
+     * Framework-managed CORS policy overrides.
+     *
+     * PHPSprinklesCors provides localhost-friendly defaults while `debug=true`.
+     * In production-like environments, no CORS allow headers are emitted unless
+     * allowed origins are configured here or in app_local.php.
+     */
+    'Cors' => [
+        // 'enabled' => true,
+        // 'allowOrigin' => ['https://app.example.com'],
+        // 'allowMethods' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        // 'allowHeaders' => ['Accept', 'Authorization', 'Content-Type', 'Origin', 'X-Requested-With'],
+        // 'exposeHeaders' => ['X-Request-Id'],
+        // 'allowCredentials' => false,
+        // 'maxAge' => 3600,
+    ],
+
+    /*
      * Apply timestamps with the last modified time to static assets (js, css, images).
      * Will append a querystring parameter containing the time the file was modified.
      * This is useful for busting browser caches.

@@ -14,6 +14,7 @@ use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
 use PHPSprinkles\BaseApplication;
 use PHPSprinkles\Middleware\HealthcheckMiddleware;
+use PHPSprinklesCors\Middleware\CorsMiddleware;
 use PHPSprinklesRequestId\Middleware\RequestIdMiddleware;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -37,12 +38,14 @@ class ApplicationTest extends TestCase
 
         $this->assertInstanceOf(ErrorHandlerMiddleware::class, $middleware->current());
         $middleware->seek(1);
-        $this->assertInstanceOf(RequestIdMiddleware::class, $middleware->current());
+        $this->assertInstanceOf(CorsMiddleware::class, $middleware->current());
         $middleware->seek(2);
-        $this->assertInstanceOf(HealthcheckMiddleware::class, $middleware->current());
+        $this->assertInstanceOf(RequestIdMiddleware::class, $middleware->current());
         $middleware->seek(3);
-        $this->assertInstanceOf(RoutingMiddleware::class, $middleware->current());
+        $this->assertInstanceOf(HealthcheckMiddleware::class, $middleware->current());
         $middleware->seek(4);
+        $this->assertInstanceOf(RoutingMiddleware::class, $middleware->current());
+        $middleware->seek(5);
         $this->assertInstanceOf(BodyParserMiddleware::class, $middleware->current());
     }
 
