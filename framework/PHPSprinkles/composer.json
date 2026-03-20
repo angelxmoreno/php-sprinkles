@@ -27,6 +27,7 @@
     "autoload": {
         "psr-4": {
             "PHPSprinkles\\": "src/",
+            "PHPSprinklesCors\\": "plugins/PHPSprinklesCors/src/",
             "PHPSprinklesRequestId\\": "plugins/PHPSprinklesRequestId/src/"
         }
     },

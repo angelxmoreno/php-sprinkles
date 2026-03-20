@@ -26,6 +26,18 @@ That gives every app:
 - one shared place for common API behavior
 - app-level freedom to add only domain-specific logic
 
+App-level configuration should expose framework-managed override surfaces when apps are expected to tune them. For example, `Cors` policy is implemented by the framework but should still be visible in each app's `config/app.php` so app builders can discover and override it easily.
+
+## Current Customizations
+
+Today the framework adds these shared behaviors on top of baseline CakePHP:
+- shared `PHPSprinkles\BaseApplication` as the standard app runtime entrypoint
+- framework-managed plugin loading for universal platform capabilities
+- `PHPSprinklesRequestId` for request/response request ID propagation
+- `PHPSprinklesCors` for shared CORS policy and localhost-friendly development defaults
+
+The README should stay high level. Detailed behavior, rationale, and override guidance should live in the docs and the planned customization cookbook.
+
 ## Namespace
 
 Framework code uses:

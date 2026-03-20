@@ -26,6 +26,7 @@ use Cake\Routing\Middleware\RoutingMiddleware;
 use Cake\TestSuite\TestCase;
 use PHPSprinkles\BaseApplication;
 use PHPSprinkles\Middleware\HealthcheckMiddleware;
+use PHPSprinklesCors\Middleware\CorsMiddleware;
 use PHPSprinklesRequestId\Middleware\RequestIdMiddleware;
 
 /**
@@ -38,6 +39,7 @@ class ApplicationTest extends TestCase
         $app = new BaseApplication(dirname(__DIR__, 2) . '/config');
         $app->bootstrap();
         $this->assertTrue($app->getPlugins()->has('Migrations'));
+        $this->assertTrue($app->getPlugins()->has('PHPSprinklesCors'));
         $this->assertTrue($app->getPlugins()->has('PHPSprinklesRequestId'));
     }
 
@@ -51,12 +53,14 @@ class ApplicationTest extends TestCase
 
         $this->assertInstanceOf(ErrorHandlerMiddleware::class, $middleware->current());
         $middleware->seek(1);
-        $this->assertInstanceOf(RequestIdMiddleware::class, $middleware->current());
+        $this->assertInstanceOf(CorsMiddleware::class, $middleware->current());
         $middleware->seek(2);
-        $this->assertInstanceOf(HealthcheckMiddleware::class, $middleware->current());
+        $this->assertInstanceOf(RequestIdMiddleware::class, $middleware->current());
         $middleware->seek(3);
-        $this->assertInstanceOf(RoutingMiddleware::class, $middleware->current());
+        $this->assertInstanceOf(HealthcheckMiddleware::class, $middleware->current());
         $middleware->seek(4);
+        $this->assertInstanceOf(RoutingMiddleware::class, $middleware->current());
+        $middleware->seek(5);
         $this->assertInstanceOf(BodyParserMiddleware::class, $middleware->current());
     }
 

@@ -32,6 +32,17 @@ return [
     ],
 
     /*
+     * Example local CORS overrides.
+     *
+     * PHPSprinklesCors already allows common localhost origins automatically while
+     * debug=true. Uncomment this block only if you need to override those defaults.
+     */
+    // 'Cors' => [
+    //     'allowOrigin' => ['http://localhost:3000', 'http://127.0.0.1:5173'],
+    //     'allowHeaders' => ['Accept', 'Authorization', 'Content-Type', 'Origin', 'X-Requested-With'],
+    // ],
+
+    /*
      * Connection information used by the ORM to connect
      * to your application's datastores.
      *

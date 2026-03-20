@@ -15,6 +15,7 @@ use Cake\ORM\Locator\TableLocator;
 use Cake\Routing\Middleware\RoutingMiddleware;
 use Cake\Routing\RouteBuilder;
 use PHPSprinkles\Middleware\HealthcheckMiddleware;
+use PHPSprinklesCors\PHPSprinklesCorsPlugin;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 
 /**
@@ -133,6 +134,7 @@ class BaseApplication extends CakeBaseApplication
     protected function pluginList(): array
     {
         return [
+            PHPSprinklesCorsPlugin::class,
             'PHPSprinklesRequestId',
         ];
     }
