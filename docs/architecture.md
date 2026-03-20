@@ -258,12 +258,34 @@ Each app's local `App\Application` should:
 
 Framework-owned plugins should be loaded here so every app inherits them automatically.
 
+For the planned app-builder documentation system that will explain these framework-level customizations, see [customization-cookbook-plan.md](/Users/amoreno/Projects/PHPSprinkles/php-sprinkles-mono/docs/customization-cookbook-plan.md).
+
 Recommended extension hooks in `BaseApplication`:
 - `pluginList(): array`
 - `middlewareConfig(MiddlewareQueue $middlewareQueue): MiddlewareQueue`
 - `serviceConfig(ContainerInterface $container): void`
 - `routes(RouteBuilder $routes): void`
 - `bootstrapConfig(): void`
+
+## Testing Direction
+
+Testing should be layered the same way the runtime is layered.
+
+Framework-level tests should verify:
+- shared middleware and plugin behavior in isolation
+- framework wiring and inherited middleware stack behavior
+- shared runtime conventions that do not require app-specific routes
+
+App-level tests should verify:
+- real API endpoint behavior through CakePHP integration tests
+- middleware, routing, controller, auth, and response behavior together
+- app-consumable HTTP scenarios that match real usage
+
+Current direction:
+- keep framework and plugin unit/behavior tests in place now
+- add richer API integration tests at the app level once `red-crm` has useful MVP endpoints worth exercising end to end
+
+This means the main long-term API integration surface should live in runnable apps, not only in framework-local tests.
 
 ## Design Rule
 

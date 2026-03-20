@@ -147,3 +147,5 @@ Each app's local `App\Application` stays thin and should only add domain-specifi
 For the fuller architecture definition, see [docs/architecture.md](/Users/amoreno/Projects/PHPSprinkles/php-sprinkles-mono/docs/architecture.md).
 
 For planned auth, plugin, and future platform work, see [docs/platform-roadmap.md](/Users/amoreno/Projects/PHPSprinkles/php-sprinkles-mono/docs/platform-roadmap.md).
+
+For the planned cookbook-style documentation system that will record PHPSprinkles customizations over CakePHP, see [docs/customization-cookbook-plan.md](/Users/amoreno/Projects/PHPSprinkles/php-sprinkles-mono/docs/customization-cookbook-plan.md).

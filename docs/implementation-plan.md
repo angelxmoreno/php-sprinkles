@@ -115,6 +115,8 @@ Verified outcome:
 
 Note:
 - framework-owned plugin verification is now proven with `PHPSprinklesRequestId`
+- current framework/plugin tests are sufficient for shared wiring and middleware behavior during the platform buildout
+- richer API integration tests should be added later at the app level, once `red-crm` exposes useful MVP endpoints that represent real-world HTTP scenarios
 
 ## Success Criteria
 
