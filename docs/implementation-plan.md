@@ -109,6 +109,14 @@ Note for later:
 sprinkles build:app red-crm
 ```
 
+- app skeleton defaults should match the proven `red-crm` local-dev setup:
+  - root-level `.env` for local configuration
+  - thin `config/bootstrap.php` delegating to `PHPSprinkles\\Bootstrap\\Bootstrapper`
+  - SQLite database as the default local datasource
+  - SQLite cache as the default local cache backend
+  - app-owned `database/` directory ready for local SQLite files
+  - generated README should explain these defaults and how production overrides them via env vars
+
 - this is not part of Phase 4 implementation right now, but the `red-crm` work should keep that future generator in mind
 
 Status: complete

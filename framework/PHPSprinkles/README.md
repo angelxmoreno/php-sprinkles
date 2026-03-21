@@ -32,6 +32,12 @@ PHPSprinkles apps should keep `config/bootstrap.php` thin:
 - the framework bootstrap is the default shared bootstrap
 - app bootstraps should delegate to `PHPSprinkles\Bootstrap\Bootstrapper` instead of copying Cake bootstrap logic
 
+PHPSprinkles app skeletons should default to fast local startup:
+- root-level `.env`
+- SQLite datasource for local development
+- SQLite cache for local development
+- a generated README that explains those defaults and the expected production overrides
+
 App-level configuration should expose framework-managed override surfaces when apps are expected to tune them. For example, `Cors` policy is implemented by the framework but should still be visible in each app's `config/app.php` so app builders can discover and override it easily.
 
 ## Current Customizations
