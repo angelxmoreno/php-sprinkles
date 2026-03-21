@@ -5,9 +5,11 @@ namespace App\Test\TestCase;
 
 use App\Application;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
+use Cake\Http\Exception\NotFoundException;
 use Cake\Http\Middleware\BodyParserMiddleware;
 use Cake\Http\MiddlewareQueue;
 use Cake\Http\Response;
+use Cake\Core\Configure;
 use Cake\Routing\Middleware\RoutingMiddleware;
 use Cake\Http\ServerRequest;
 use Cake\TestSuite\IntegrationTestTrait;
@@ -59,5 +61,32 @@ class ApplicationTest extends TestCase
         $requestId = $this->_response->getHeaderLine('X-Request-Id');
         $this->assertNotSame('', $requestId);
         $this->assertHeader('X-Request-Id', $requestId);
+    }
+
+    public function testDebugPageReturnsJsonWhenDebugEnabled(): void
+    {
+        Configure::write('debug', true);
+
+        $this->get('/debug');
+
+        $this->assertResponseOk();
+        $this->assertContentType('application/json');
+        $this->assertResponseContains('"status": "ok"');
+        $this->assertResponseContains('"framework"');
+        $this->assertResponseContains('"environment"');
+        $this->assertResponseContains('"database"');
+        $this->assertResponseContains('"driver"');
+        $this->assertResponseContains('"cache"');
+        $this->assertResponseContains('"configuredClass"');
+        $this->assertResponseContains('"probe"');
+    }
+
+    public function testDebugPageReturnsNotFoundWhenDebugDisabled(): void
+    {
+        Configure::write('debug', false);
+        $this->disableErrorHandlerMiddleware();
+        $this->expectException(NotFoundException::class);
+
+        $this->get('/debug');
     }
 }

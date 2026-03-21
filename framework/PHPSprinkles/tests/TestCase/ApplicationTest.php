@@ -27,6 +27,7 @@ use Cake\TestSuite\TestCase;
 use PHPSprinkles\BaseApplication;
 use PHPSprinkles\Middleware\HealthcheckMiddleware;
 use PHPSprinklesCors\Middleware\CorsMiddleware;
+use PHPSprinklesDebugPage\PHPSprinklesDebugPagePlugin;
 use PHPSprinklesRequestId\Middleware\RequestIdMiddleware;
 
 /**
@@ -40,6 +41,7 @@ class ApplicationTest extends TestCase
         $app->bootstrap();
         $this->assertTrue($app->getPlugins()->has('Migrations'));
         $this->assertTrue($app->getPlugins()->has('PHPSprinklesCors'));
+        $this->assertTrue($app->getPlugins()->has('PHPSprinklesDebugPage'));
         $this->assertTrue($app->getPlugins()->has('PHPSprinklesRequestId'));
     }
 

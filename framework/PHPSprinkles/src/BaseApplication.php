@@ -16,6 +16,7 @@ use Cake\Routing\Middleware\RoutingMiddleware;
 use Cake\Routing\RouteBuilder;
 use PHPSprinkles\Middleware\HealthcheckMiddleware;
 use PHPSprinklesCors\PHPSprinklesCorsPlugin;
+use PHPSprinklesDebugPage\PHPSprinklesDebugPagePlugin;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 
 /**
@@ -83,6 +84,7 @@ class BaseApplication extends CakeBaseApplication
             }
         }
 
+        $this->pluginRoutes($routes);
         $this->routesConfig($routes);
     }
 
@@ -135,6 +137,7 @@ class BaseApplication extends CakeBaseApplication
     {
         return [
             PHPSprinklesCorsPlugin::class,
+            PHPSprinklesDebugPagePlugin::class,
             'PHPSprinklesRequestId',
         ];
     }

@@ -35,6 +35,7 @@ Today the framework adds these shared behaviors on top of baseline CakePHP:
 - framework-managed plugin loading for universal platform capabilities
 - `PHPSprinklesRequestId` for request/response request ID propagation
 - `PHPSprinklesCors` for shared CORS policy and localhost-friendly development defaults
+- `PHPSprinklesDebugPage` for a debug-only `/debug` JSON setup/status endpoint
 
 The README should stay high level. Detailed behavior, rationale, and override guidance should live in the docs and the planned customization cookbook.
 

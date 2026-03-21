@@ -28,6 +28,7 @@
         "psr-4": {
             "PHPSprinkles\\": "src/",
             "PHPSprinklesCors\\": "plugins/PHPSprinklesCors/src/",
+            "PHPSprinklesDebugPage\\": "plugins/PHPSprinklesDebugPage/src/",
             "PHPSprinklesRequestId\\": "plugins/PHPSprinklesRequestId/src/"
         }
     },
