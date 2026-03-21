@@ -46,6 +46,7 @@ use Cake\Mailer\TransportFactory;
 use Cake\Routing\Router;
 use Cake\Utility\Security;
 use Detection\MobileDetect;
+use PHPSprinkles\Cache\Engine\SqliteEngine;
 use function Cake\Core\env;
 
 /*
@@ -196,6 +197,9 @@ unset($fullBaseUrl);
  * Apply the loaded configuration settings to their respective systems.
  * This will also remove the loaded config data from memory.
  */
+Cache::setDsnClassMap([
+    'sqlite' => SqliteEngine::class,
+]);
 Cache::setConfig(Configure::consume('Cache'));
 ConnectionManager::setConfig(Configure::consume('Datasources'));
 TransportFactory::setConfig(Configure::consume('EmailTransport'));
