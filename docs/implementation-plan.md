@@ -10,6 +10,17 @@ This is the concrete sequence for moving the monorepo from the current CakePHP s
 - Phase 4: complete
 - Phase 5: complete for the framework and first app
 
+## Next Sequencing Rule
+
+Future v1 work should proceed in vertical slices through `red-crm`, not as a single "all framework plugins first" block.
+
+That means:
+- keep infra-first framework work early when it does not depend on real data
+- create real MVP resources in `red-crm`
+- introduce model-dependent framework plugins such as `Crud`, `Search`, and `Trash` when those resources actually require them
+- validate those framework capabilities through real app behavior instead of placeholder data
+- treat `PHPSprinklesAuth` as its own framework-owned slice rather than a prerequisite for every other MVP feature
+
 ## Phase 1: Restructure the Monorepo
 
 1. Move `packages/PHPSprinkles` to `framework/PHPSprinkles`.

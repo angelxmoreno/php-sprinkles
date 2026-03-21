@@ -202,35 +202,63 @@ These should only become PHPSprinkles framework plugins when we are sure they ar
 
 This section is intentionally limited to the order for completing v1.
 
-1. Framework plugin setup
-   - standardize framework integration for `FriendsOfCake/crud`
-   - standardize framework integration for `FriendsOfCake/search`
-   - standardize framework integration for `UseMuffin/Trash`
-   - standardize CORS middleware/config at the framework level
+The sequencing rule has changed:
+- do not front-load every framework plugin before the app has useful data
+- build v1 in vertical slices through `red-crm`
+- introduce model-dependent framework plugins when a real MVP resource requires them
 
-2. `PHPSprinklesAuth` foundation
-   - create the framework-owned `PHPSprinklesAuth` plugin
-   - define the base `users` schema
-   - establish password hashing and email/password authentication
-   - establish JWT generation and verification using app-configurable env-driven `HS256`
+### Phase A: Infra-first framework work
 
-3. Auth API surface
-   - implement framework-owned auth actions for `login`, `register`, `me`, and `update`
-   - return JWT plus user payload from `login`
-   - return JWT plus user payload from `register`
-   - return the authenticated user payload from `me`
-   - limit `update` to changing `name` in v1
+Complete shared work that does not depend on a real persisted domain model:
+- shared application/runtime conventions
+- request ID behavior
+- CORS middleware/config
+- other framework wiring that can be validated without app-specific resources
 
-4. App-level override surface
-   - add the app-level registration-public toggle
-   - add app-level JWT lifetime configuration
-   - add app-level JWT claims configuration
-   - keep the override surface minimal until real app needs emerge
+### Phase B: First MVP resource in `red-crm`
 
-5. End-to-end verification
-   - prove framework-owned auth behavior loads automatically in `red-crm`
-   - verify the framework plugins work together in one real app
-   - verify the API contract for `login`, `register`, `me`, and `update`
+Create the first meaningful non-auth resource in `red-crm`.
+
+This resource becomes the proving ground for model-dependent platform capabilities.
+
+Examples:
+- `contacts`
+- `companies`
+- another real CRM entity
+
+The important rule is that it must be a real MVP resource, not a temporary validation model.
+
+### Phase C: Framework capability slices driven by that resource
+
+Once a real app resource exists, introduce framework/plugin integrations in response to concrete app needs:
+- add `FriendsOfCake/crud` when the resource needs shared CRUD/API conventions
+- add `FriendsOfCake/search` when the resource needs list/filter/search behavior
+- add `UseMuffin/Trash` when the resource needs soft delete behavior
+
+This means `Search` and `Trash` are no longer prerequisites for starting the MVP.
+
+They arrive when a real resource in `red-crm` makes them necessary and testable.
+
+### Phase D: `PHPSprinklesAuth`
+
+Implement auth as its own vertical slice:
+- create the framework-owned `PHPSprinklesAuth` plugin
+- define the base `users` schema
+- establish password hashing and email/password authentication
+- establish JWT generation and verification using app-configurable env-driven `HS256`
+- implement framework-owned auth actions for `login`, `register`, `me`, and `update`
+- add the app-level registration-public toggle
+- add app-level JWT lifetime configuration
+- add app-level JWT claims configuration
+
+Auth remains framework-owned, but it no longer blocks the start of non-auth MVP feature work.
+
+### Phase E: End-to-end verification
+
+Verify the framework plugins through real app behavior in `red-crm`:
+- prove each framework capability through a real resource that uses it
+- verify auth behavior through `users`
+- add richer app-level integration tests once endpoints exist that reflect real-world HTTP scenarios
 
 ## API Layer Direction
 

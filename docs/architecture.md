@@ -296,6 +296,16 @@ This means the main long-term API integration surface should live in runnable ap
 
 This rule should be used whenever there is uncertainty about where new code belongs.
 
+Sequencing rule:
+- app-level MVP resources can be created before every future framework plugin is integrated
+- framework-level capabilities should be introduced when a real app resource creates a concrete need for them
+- do not invent temporary framework data just to prove a model-dependent plugin in isolation
+
+In practice, this means framework ownership and app-first delivery are not in conflict:
+- the app creates the need
+- the framework owns the reusable capability
+- the app proves the capability through a real endpoint or model flow
+
 ## Promotion / Extraction Rule
 
 Framework plugins can later be promoted to top-level `plugins/` if they stop being universal, need an independent lifecycle, or become realistic standalone packages.
