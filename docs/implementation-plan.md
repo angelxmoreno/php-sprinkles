@@ -96,6 +96,10 @@ apps/red-crm
 4. Implement a tiny local `App\Application` that extends `PHPSprinkles\BaseApplication`.
 5. Keep domain code in the app's `src/`.
 6. Reuse as much shared framework configuration as possible instead of copying framework-owned behavior into the app.
+7. Keep app `config/bootstrap.php` as a thin delegator:
+   - app-owned `paths.php`
+   - framework-owned shared bootstrap
+   - no copied Cake bootstrap logic in each app
 
 Note for later:
 - add a scaffolding command to generate the bare minimum for a new app
@@ -113,6 +117,7 @@ Verified outcome:
 - `apps/red-crm` exists as the first thin runnable app
 - it keeps the `App\\` namespace
 - `App\Application` extends `PHPSprinkles\BaseApplication`
+- `config/bootstrap.php` is a thin wrapper that delegates to the framework bootstrap
 - the app consumes `phpsprinkles/framework` through a Composer path repository
 - `./bin/cake --version` works
 - `composer test` passes
