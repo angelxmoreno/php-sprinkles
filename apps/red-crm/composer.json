@@ -5,6 +5,7 @@
     "type": "project",
     "require": {
         "php": ">=8.2",
+        "josegonzalez/dotenv": "^4.0",
         "phpsprinkles/framework": "@dev"
     },
     "require-dev": {

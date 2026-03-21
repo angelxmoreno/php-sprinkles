@@ -46,6 +46,7 @@ use Cake\Mailer\TransportFactory;
 use Cake\Routing\Router;
 use Cake\Utility\Security;
 use Detection\MobileDetect;
+use josegonzalez\Dotenv\Loader;
 use function Cake\Core\env;
 
 /*
@@ -67,14 +68,14 @@ require CAKE . 'functions.php';
  * security risks. See https://github.com/josegonzalez/php-dotenv#general-security-information
  * for more information for recommended practices.
 */
-// if (!env('APP_NAME') && file_exists(CONFIG . '.env')) {
-//     $dotenv = new \josegonzalez\Dotenv\Loader([CONFIG . '.env']);
-//     $dotenv->parse()
-//         ->putenv()
-//         ->toEnv()
-//         ->toServer();
-// }
-
+$env_file = ROOT .DS. '.env';
+if (!file_exists($env_file)) {
+    throw new CakeException('Missing .env file $env_file');
+}
+$dotenv = new Loader([$env_file]);
+$dotenv->parse()
+    ->toEnv()
+    ->toServer();
 /*
  * Initializes default Config store and loads the main configuration file (app.php)
  *
