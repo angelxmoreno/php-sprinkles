@@ -15,6 +15,8 @@ use Cake\ORM\Locator\TableLocator;
 use Cake\Routing\Middleware\RoutingMiddleware;
 use Cake\Routing\RouteBuilder;
 use PHPSprinkles\Middleware\HealthcheckMiddleware;
+use PHPSprinklesCors\PHPSprinklesCorsPlugin;
+use PHPSprinklesDebugPage\PHPSprinklesDebugPagePlugin;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 
 /**
@@ -49,12 +51,10 @@ class BaseApplication extends CakeBaseApplication
 
     public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue
     {
-        $middlewareQueue
-            ->add(new ErrorHandlerMiddleware(Configure::read('Error'), $this));
-
         $middlewareQueue = $this->pluginMiddleware($middlewareQueue);
 
         $middlewareQueue
+            ->add(new ErrorHandlerMiddleware(Configure::read('Error'), $this))
             ->add(new HealthcheckMiddleware())
             ->add(new RoutingMiddleware($this))
             ->add(new BodyParserMiddleware());
@@ -82,6 +82,7 @@ class BaseApplication extends CakeBaseApplication
             }
         }
 
+        $this->pluginRoutes($routes);
         $this->routesConfig($routes);
     }
 
@@ -133,6 +134,8 @@ class BaseApplication extends CakeBaseApplication
     protected function pluginList(): array
     {
         return [
+            PHPSprinklesCorsPlugin::class,
+            PHPSprinklesDebugPagePlugin::class,
             'PHPSprinklesRequestId',
         ];
     }

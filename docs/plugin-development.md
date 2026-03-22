@@ -129,3 +129,5 @@ When implemented, they should:
 - create the standard directories
 - add local test scaffolding
 - preserve the chosen ownership model from day one
+
+Framework plugin behavior that changes how all apps work should also be documented in the planned cookbook-style customization docs described in [customization-cookbook-plan.md](/Users/amoreno/Projects/PHPSprinkles/php-sprinkles-mono/docs/customization-cookbook-plan.md).

@@ -10,6 +10,17 @@ This is the concrete sequence for moving the monorepo from the current CakePHP s
 - Phase 4: complete
 - Phase 5: complete for the framework and first app
 
+## Next Sequencing Rule
+
+Future v1 work should proceed in vertical slices through `red-crm`, not as a single "all framework plugins first" block.
+
+That means:
+- keep infra-first framework work early when it does not depend on real data
+- create real MVP resources in `red-crm`
+- introduce model-dependent framework plugins such as `Crud`, `Search`, and `Trash` when those resources actually require them
+- validate those framework capabilities through real app behavior instead of placeholder data
+- treat `PHPSprinklesAuth` as its own framework-owned slice rather than a prerequisite for every other MVP feature
+
 ## Phase 1: Restructure the Monorepo
 
 1. Move `packages/PHPSprinkles` to `framework/PHPSprinkles`.
@@ -85,6 +96,10 @@ apps/red-crm
 4. Implement a tiny local `App\Application` that extends `PHPSprinkles\BaseApplication`.
 5. Keep domain code in the app's `src/`.
 6. Reuse as much shared framework configuration as possible instead of copying framework-owned behavior into the app.
+7. Keep app `config/bootstrap.php` as a thin delegator:
+   - app-owned `paths.php`
+   - framework-owned shared bootstrap
+   - no copied Cake bootstrap logic in each app
 
 Note for later:
 - add a scaffolding command to generate the bare minimum for a new app
@@ -94,6 +109,14 @@ Note for later:
 sprinkles build:app red-crm
 ```
 
+- app skeleton defaults should match the proven `red-crm` local-dev setup:
+  - root-level `.env` for local configuration
+  - thin `config/bootstrap.php` delegating to `PHPSprinkles\\Bootstrap\\Bootstrapper`
+  - SQLite database as the default local datasource
+  - SQLite cache as the default local cache backend
+  - app-owned `database/` directory ready for local SQLite files
+  - generated README should explain these defaults and how production overrides them via env vars
+
 - this is not part of Phase 4 implementation right now, but the `red-crm` work should keep that future generator in mind
 
 Status: complete
@@ -102,6 +125,7 @@ Verified outcome:
 - `apps/red-crm` exists as the first thin runnable app
 - it keeps the `App\\` namespace
 - `App\Application` extends `PHPSprinkles\BaseApplication`
+- `config/bootstrap.php` is a thin wrapper that delegates to the framework bootstrap
 - the app consumes `phpsprinkles/framework` through a Composer path repository
 - `./bin/cake --version` works
 - `composer test` passes
@@ -115,6 +139,8 @@ Verified outcome:
 
 Note:
 - framework-owned plugin verification is now proven with `PHPSprinklesRequestId`
+- current framework/plugin tests are sufficient for shared wiring and middleware behavior during the platform buildout
+- richer API integration tests should be added later at the app level, once `red-crm` exposes useful MVP endpoints that represent real-world HTTP scenarios
 
 ## Success Criteria
 

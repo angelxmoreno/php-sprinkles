@@ -8,6 +8,7 @@
         "phpsprinkles/framework": "@dev"
     },
     "require-dev": {
+        "cakephp/bake": "^3.6",
         "phpunit/phpunit": "^11.5.3 || ^12.1.3"
     },
     "repositories": [
