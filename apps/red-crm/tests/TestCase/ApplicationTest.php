@@ -25,6 +25,20 @@ class ApplicationTest extends TestCase
 {
     use IntegrationTestTrait;
 
+    private mixed $previousDebug;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->previousDebug = Configure::read('debug');
+    }
+
+    protected function tearDown(): void
+    {
+        Configure::write('debug', $this->previousDebug);
+        parent::tearDown();
+    }
+
     public function testApplicationExtendsFrameworkBaseApplication(): void
     {
         $app = new Application(dirname(__DIR__, 2) . '/config');
@@ -38,11 +52,11 @@ class ApplicationTest extends TestCase
         $app->bootstrap();
         $middleware = $app->middleware(new MiddlewareQueue());
 
-        $this->assertInstanceOf(ErrorHandlerMiddleware::class, $middleware->current());
-        $middleware->seek(1);
         $this->assertInstanceOf(CorsMiddleware::class, $middleware->current());
-        $middleware->seek(2);
+        $middleware->seek(1);
         $this->assertInstanceOf(RequestIdMiddleware::class, $middleware->current());
+        $middleware->seek(2);
+        $this->assertInstanceOf(ErrorHandlerMiddleware::class, $middleware->current());
         $middleware->seek(3);
         $this->assertInstanceOf(HealthcheckMiddleware::class, $middleware->current());
         $middleware->seek(4);

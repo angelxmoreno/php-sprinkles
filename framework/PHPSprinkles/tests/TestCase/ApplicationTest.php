@@ -53,11 +53,11 @@ class ApplicationTest extends TestCase
 
         $middleware = $app->middleware($middleware);
 
-        $this->assertInstanceOf(ErrorHandlerMiddleware::class, $middleware->current());
-        $middleware->seek(1);
         $this->assertInstanceOf(CorsMiddleware::class, $middleware->current());
-        $middleware->seek(2);
+        $middleware->seek(1);
         $this->assertInstanceOf(RequestIdMiddleware::class, $middleware->current());
+        $middleware->seek(2);
+        $this->assertInstanceOf(ErrorHandlerMiddleware::class, $middleware->current());
         $middleware->seek(3);
         $this->assertInstanceOf(HealthcheckMiddleware::class, $middleware->current());
         $middleware->seek(4);

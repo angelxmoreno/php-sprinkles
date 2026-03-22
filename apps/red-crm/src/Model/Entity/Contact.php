@@ -33,8 +33,5 @@ class Contact extends Entity
         'email' => true,
         'phone' => true,
         'notes' => true,
-        'created' => true,
-        'updated' => true,
-        'deleted' => true,
     ];
 }

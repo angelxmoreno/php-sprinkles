@@ -9,9 +9,21 @@ use PHPSprinkles\Cache\Engine\SqliteEngine;
 
 class CacheDsnClassMapTest extends TestCase
 {
+    /**
+     * @var array<string, string>
+     */
+    private array $previousDsnClassMap;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->previousDsnClassMap = Cache::getDsnClassMap();
+    }
+
     protected function tearDown(): void
     {
         Cache::drop('sqlite_url_test');
+        Cache::setDsnClassMap($this->previousDsnClassMap);
         parent::tearDown();
     }
 

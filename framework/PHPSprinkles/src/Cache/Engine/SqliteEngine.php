@@ -145,11 +145,17 @@ class SqliteEngine extends CacheEngine
             return false;
         }
 
-        $statement = $this->pdo->prepare(
-            sprintf('DELETE FROM %s WHERE scope = :scope', $this->quotedTable()),
-        );
+        try {
+            $statement = $this->pdo->prepare(
+                sprintf('DELETE FROM %s WHERE scope = :scope', $this->quotedTable()),
+            );
 
-        return $statement->execute(['scope' => $this->scope()]);
+            return $statement->execute(['scope' => $this->scope()]);
+        } catch (PDOException $exception) {
+            $this->warning($exception->getMessage());
+
+            return false;
+        }
     }
 
     public function clearGroup(string $group): bool
@@ -178,6 +184,10 @@ class SqliteEngine extends CacheEngine
      */
     public function groups(): array
     {
+        if (!$this->isReady) {
+            return [];
+        }
+
         $groups = [];
         foreach ($this->_config['groups'] as $group) {
             $groups[] = $group . $this->groupVersion((string)$group);
@@ -229,39 +239,51 @@ class SqliteEngine extends CacheEngine
      */
     private function fetchRow(string $entryType, string $cacheKey): ?array
     {
-        $statement = $this->pdo->prepare(
-            sprintf(
-                'SELECT value, value_type, expires_at
-                 FROM %s
-                 WHERE scope = :scope AND entry_type = :entry_type AND cache_key = :cache_key',
-                $this->quotedTable(),
-            ),
-        );
-        $statement->execute([
-            'scope' => $this->scope(),
-            'entry_type' => $entryType,
-            'cache_key' => $cacheKey,
-        ]);
+        try {
+            $statement = $this->pdo->prepare(
+                sprintf(
+                    'SELECT value, value_type, expires_at
+                     FROM %s
+                     WHERE scope = :scope AND entry_type = :entry_type AND cache_key = :cache_key',
+                    $this->quotedTable(),
+                ),
+            );
+            $statement->execute([
+                'scope' => $this->scope(),
+                'entry_type' => $entryType,
+                'cache_key' => $cacheKey,
+            ]);
 
-        $row = $statement->fetch(PDO::FETCH_ASSOC);
+            $row = $statement->fetch(PDO::FETCH_ASSOC);
 
-        return is_array($row) ? $row : null;
+            return is_array($row) ? $row : null;
+        } catch (PDOException $exception) {
+            $this->warning($exception->getMessage());
+
+            return null;
+        }
     }
 
     private function deleteRow(string $entryType, string $cacheKey): bool
     {
-        $statement = $this->pdo->prepare(
-            sprintf(
-                'DELETE FROM %s WHERE scope = :scope AND entry_type = :entry_type AND cache_key = :cache_key',
-                $this->quotedTable(),
-            ),
-        );
+        try {
+            $statement = $this->pdo->prepare(
+                sprintf(
+                    'DELETE FROM %s WHERE scope = :scope AND entry_type = :entry_type AND cache_key = :cache_key',
+                    $this->quotedTable(),
+                ),
+            );
 
-        return $statement->execute([
-            'scope' => $this->scope(),
-            'entry_type' => $entryType,
-            'cache_key' => $cacheKey,
-        ]);
+            return $statement->execute([
+                'scope' => $this->scope(),
+                'entry_type' => $entryType,
+                'cache_key' => $cacheKey,
+            ]);
+        } catch (PDOException $exception) {
+            $this->warning($exception->getMessage());
+
+            return false;
+        }
     }
 
     private function upsertRow(
@@ -340,21 +362,63 @@ class SqliteEngine extends CacheEngine
         }
 
         $cacheKey = $this->storageKey($key);
-        $current = $this->get($key);
-        if ($current === null) {
-            $current = 0;
-        }
 
-        if (!is_int($current) && !is_float($current) && !(is_string($current) && is_numeric($current))) {
+        try {
+            $this->pdo->beginTransaction();
+
+            $row = $this->fetchRow('entry', $cacheKey);
+            if ($row === null || (int)$row['expires_at'] <= time()) {
+                $next = $delta;
+                $success = $this->upsertRow(
+                    'entry',
+                    $cacheKey,
+                    (string)$next,
+                    'int',
+                    time() + $this->duration(null),
+                );
+                if (!$success) {
+                    $this->pdo->rollBack();
+
+                    return false;
+                }
+
+                $this->pdo->commit();
+
+                return $next;
+            }
+
+            $current = $this->decodeValue((string)$row['value_type'], $row['value']);
+            if (!is_int($current) && !is_float($current) && !(is_string($current) && is_numeric($current))) {
+                $this->pdo->rollBack();
+
+                return false;
+            }
+
+            $next = (int)$current + $delta;
+            $success = $this->upsertRow(
+                'entry',
+                $cacheKey,
+                (string)$next,
+                'int',
+                time() + $this->duration(null),
+            );
+            if (!$success) {
+                $this->pdo->rollBack();
+
+                return false;
+            }
+
+            $this->pdo->commit();
+
+            return $next;
+        } catch (PDOException $exception) {
+            if ($this->pdo !== null && $this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            $this->warning($exception->getMessage());
+
             return false;
         }
-
-        $next = (int)$current + $delta;
-        if (!$this->set($key, $next)) {
-            return false;
-        }
-
-        return $next;
     }
 
     private function groupVersion(string $group): int

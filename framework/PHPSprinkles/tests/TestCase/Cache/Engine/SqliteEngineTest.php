@@ -12,15 +12,22 @@ class SqliteEngineTest extends TestCase
 {
     private string $database;
 
+    /**
+     * @var array<string, string>
+     */
+    private array $previousDsnClassMap;
+
     protected function setUp(): void
     {
         parent::setUp();
         $this->database = sys_get_temp_dir() . '/phpsprinkles-cache-' . bin2hex(random_bytes(8)) . '.sqlite';
+        $this->previousDsnClassMap = Cache::getDsnClassMap();
     }
 
     protected function tearDown(): void
     {
         Cache::drop('sqlite_test');
+        Cache::setDsnClassMap($this->previousDsnClassMap);
         @unlink($this->database);
         parent::tearDown();
     }
@@ -51,6 +58,7 @@ class SqliteEngineTest extends TestCase
         ]);
 
         $engine->set('short_lived', 'value');
+        $this->assertSame('value', $engine->get('short_lived'));
         sleep(2);
 
         $this->assertNull($engine->get('short_lived'));

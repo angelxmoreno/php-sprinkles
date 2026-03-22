@@ -14,11 +14,26 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class CorsMiddlewareTest extends TestCase
 {
+    private mixed $previousCors;
+
+    private mixed $previousDebug;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->previousCors = Configure::read('Cors');
+        $this->previousDebug = Configure::read('debug');
+    }
+
     protected function tearDown(): void
     {
+        if ($this->previousCors === null) {
+            Configure::delete('Cors');
+        } else {
+            Configure::write('Cors', $this->previousCors);
+        }
+        Configure::write('debug', $this->previousDebug);
         parent::tearDown();
-        Configure::delete('Cors');
-        Configure::write('debug', false);
     }
 
     public function testSkipsHeadersWhenRequestHasNoOrigin(): void
