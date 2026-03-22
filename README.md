@@ -146,8 +146,10 @@ Each app's local `App\Application` stays thin and should only add domain-specifi
 
 See the fuller architecture definition in [docs/architecture.md](docs/architecture.md).
 
-Planned auth, plugin, and future platform work live in
-[docs/platform-roadmap.md](docs/platform-roadmap.md).
+Current execution order and next platform work live in
+[docs/roadmap.md](docs/roadmap.md).
 
 The cookbook-style documentation plan for PHPSprinkles customizations lives in
 [docs/customization-cookbook-plan.md](docs/customization-cookbook-plan.md).
+
+For the documentation map, see [docs/README.md](docs/README.md).
