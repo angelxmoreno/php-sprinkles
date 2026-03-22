@@ -6,59 +6,56 @@ namespace App\Test\TestCase\Model\Table;
 use App\Model\Table\ContactsTable;
 use Cake\TestSuite\TestCase;
 
-/**
- * App\Model\Table\ContactsTable Test Case
- */
 class ContactsTableTest extends TestCase
 {
-    /**
-     * Test subject
-     *
-     * @var \App\Model\Table\ContactsTable
-     */
-    protected $Contacts;
+    private ContactsTable $Contacts;
 
-    /**
-     * Fixtures
-     *
-     * @var array<string>
-     */
-    protected array $fixtures = [
-        'app.Contacts',
-    ];
-
-    /**
-     * setUp method
-     *
-     * @return void
-     */
     protected function setUp(): void
     {
         parent::setUp();
-        $config = $this->getTableLocator()->exists('Contacts') ? [] : ['className' => ContactsTable::class];
-        $this->Contacts = $this->getTableLocator()->get('Contacts', $config);
+        $this->Contacts = $this->getTableLocator()->get('Contacts');
     }
 
-    /**
-     * tearDown method
-     *
-     * @return void
-     */
-    protected function tearDown(): void
+    public function testDeleteSoftDeletesContact(): void
     {
-        unset($this->Contacts);
+        $contact = $this->Contacts->newEntity([
+            'name' => 'Jane Doe',
+            'email' => 'jane@example.com',
+            'phone' => '555-1212',
+            'notes' => 'Initial contact',
+        ]);
 
-        parent::tearDown();
+        $this->Contacts->saveOrFail($contact);
+
+        $this->assertTrue((bool)$this->Contacts->delete($contact));
+        $this->assertSame(0, $this->Contacts->find()->where(['id' => $contact->id])->count());
+
+        $trashed = $this->Contacts->find('withTrashed')
+            ->where(['id' => $contact->id])
+            ->firstOrFail();
+
+        $this->assertNotNull($trashed->deleted);
     }
 
-    /**
-     * Test validationDefault method
-     *
-     * @return void
-     * @link \App\Model\Table\ContactsTable::validationDefault()
-     */
-    public function testValidationDefault(): void
+    public function testRestoreTrashMakesContactVisibleAgain(): void
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $contact = $this->Contacts->newEntity([
+            'name' => 'John Doe',
+            'email' => 'john@example.com',
+            'phone' => '555-3434',
+            'notes' => 'Follow up later',
+        ]);
+
+        $this->Contacts->saveOrFail($contact);
+        $this->Contacts->deleteOrFail($contact);
+
+        $trashed = $this->Contacts->find('onlyTrashed')
+            ->where(['id' => $contact->id])
+            ->firstOrFail();
+
+        $this->Contacts->getBehavior('Trash')->restoreTrash($trashed);
+
+        $restored = $this->Contacts->get($contact->id);
+        $this->assertNull($restored->deleted);
     }
 }

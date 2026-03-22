@@ -3,10 +3,8 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
-use Cake\ORM\Query\SelectQuery;
-use Cake\ORM\RulesChecker;
-use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use PHPSprinkles\Model\Table\AppTable;
 
 /**
  * Contacts Model
@@ -27,7 +25,7 @@ use Cake\Validation\Validator;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class ContactsTable extends Table
+class ContactsTable extends AppTable
 {
     /**
      * Initialize method
@@ -42,8 +40,16 @@ class ContactsTable extends Table
         $this->setTable('contacts');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
+        $this->initializePhpsprinklesTable();
 
-        $this->addBehavior('Timestamp');
+        $this->addBehavior('Timestamp', [
+            'events' => [
+                'Model.beforeSave' => [
+                    'created' => 'new',
+                    'updated' => 'always',
+                ],
+            ],
+        ]);
     }
 
     /**
@@ -77,10 +83,8 @@ class ContactsTable extends Table
             ->notEmptyString('notes');
 
         $validator
-            ->scalar('deleted')
-            ->maxLength('deleted', 255)
-            ->requirePresence('deleted', 'create')
-            ->notEmptyString('deleted');
+            ->dateTime('deleted')
+            ->allowEmptyDateTime('deleted');
 
         return $validator;
     }

@@ -15,7 +15,7 @@ use Cake\ORM\Entity;
  * @property string $notes
  * @property \Cake\I18n\DateTime $created
  * @property \Cake\I18n\DateTime $updated
- * @property string $deleted
+ * @property \Cake\I18n\DateTime|null $deleted
  */
 class Contact extends Entity
 {
