@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace PHPSprinklesCors\Test\TestCase\Middleware;
 
 use Cake\Core\Configure;
+use Cake\Core\Exception\CakeException;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
 use PHPUnit\Framework\TestCase;
@@ -178,6 +179,7 @@ class CorsMiddlewareTest extends TestCase
             'allowCredentials' => true,
         ]);
 
+        $this->expectException(CakeException::class);
         $this->expectExceptionMessage('wildcard origins cannot be combined with allowCredentials=true');
 
         $middleware = new CorsMiddleware();

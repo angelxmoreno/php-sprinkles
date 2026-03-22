@@ -144,8 +144,10 @@ Framework-owned plugins should be loaded by the framework, not by individual app
 
 Each app's local `App\Application` stays thin and should only add domain-specific routes, services, or config.
 
-For the fuller architecture definition, see [docs/architecture.md](docs/architecture.md).
+See the fuller architecture definition in [docs/architecture.md](docs/architecture.md).
 
-For planned auth, plugin, and future platform work, see [docs/platform-roadmap.md](docs/platform-roadmap.md).
+Planned auth, plugin, and future platform work live in
+[docs/platform-roadmap.md](docs/platform-roadmap.md).
 
-For the planned cookbook-style documentation system that will record PHPSprinkles customizations over CakePHP, see [docs/customization-cookbook-plan.md](docs/customization-cookbook-plan.md).
+The cookbook-style documentation plan for PHPSprinkles customizations lives in
+[docs/customization-cookbook-plan.md](docs/customization-cookbook-plan.md).

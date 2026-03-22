@@ -85,7 +85,10 @@ class ApplicationTest extends TestCase
 
         $this->assertResponseOk();
         $this->assertContentType('application/json');
-        $this->assertResponseContains('"status": "ok"');
+        $data = json_decode((string)$this->_response->getBody(), true);
+
+        $this->assertIsArray($data);
+        $this->assertSame('ok', $data['status'] ?? null);
         $this->assertResponseContains('"framework"');
         $this->assertResponseContains('"environment"');
         $this->assertResponseContains('"database"');
