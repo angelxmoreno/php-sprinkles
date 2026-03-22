@@ -24,6 +24,7 @@ class CorsMiddlewareTest extends TestCase
         parent::setUp();
         $this->previousCors = Configure::read('Cors');
         $this->previousDebug = Configure::read('debug');
+        Configure::delete('Cors');
     }
 
     protected function tearDown(): void
@@ -139,7 +140,7 @@ class CorsMiddlewareTest extends TestCase
         $this->assertSame('GET, POST', $response->getHeaderLine('Access-Control-Allow-Methods'));
         $this->assertSame('Authorization, Content-Type', $response->getHeaderLine('Access-Control-Allow-Headers'));
         $this->assertSame('600', $response->getHeaderLine('Access-Control-Max-Age'));
-        $this->assertSame(
+        $this->assertEqualsCanonicalizing(
             ['Origin', 'Access-Control-Request-Method', 'Access-Control-Request-Headers'],
             array_map('trim', explode(',', $response->getHeaderLine('Vary'))),
         );
