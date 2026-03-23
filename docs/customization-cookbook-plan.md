@@ -126,8 +126,7 @@ This rule does not require cookbook pages for ordinary domain-app behavior.
 Existing docs already have useful roles:
 - `docs/architecture.md` explains structural ownership and layering
 - `docs/plugin-development.md` explains plugin placement and lifecycle
-- `docs/platform-roadmap.md` captures future platform direction
-- `docs/implementation-plan.md` captures execution sequencing
+- `docs/roadmap.md` captures current execution order and future platform work
 
 The cookbook should not replace those documents.
 
